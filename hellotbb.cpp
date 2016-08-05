@@ -12,6 +12,8 @@
 #include "tbb/task_group.h"
 
 #include <iostream>
+#include <stdio.h> //// MOVE TO iostreams TODO
+#include <stdlib.h>
 
 #include <tbb/mutex.h>
 tbb::mutex my_mutex;
@@ -19,7 +21,7 @@ tbb::mutex my_mutex;
 #if _WIN32||_WIN64
 #include <Windows.h> /* Sleep */
 #else
-#error Only tested on Windows!
+//// #error Only tested on Windows! TODO
 #include <unistd.h>  /* usleep */
 #endif
 
