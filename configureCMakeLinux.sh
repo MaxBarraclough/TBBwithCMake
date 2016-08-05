@@ -1,0 +1,1 @@
+cmake -G"Unix Makefiles" -DTBB_ROOT_DIR=/home/mb/Downloads/tbb44_20160526oss -DTBB_LIBRARIES=/home/mb/Downloads/tbb44_20160526oss/build/linux_intel64_gcc_cc4.8_libc2.19_kernel3.19.0_debug/  -DTBB_tbb_LIBRARY_DEBUG=/home/mb/Downloads/tbb44_20160526oss/build/linux_intel64_gcc_cc4.8_libc2.19_kernel3.19.0_debug/libtbb_debug.so
