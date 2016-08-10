@@ -1,6 +1,21 @@
 cmake_minimum_required(VERSION 2.6)
 project(hellotbb)
 
+
+
+# We want to use C++ lambdas.
+# To avoid confusing compilation errors, we request C++11 explicitly on g++ and clang++
+
+IF ( CMAKE_COMPILER_IS_GNUCXX )
+  SET(CMAKE_CXX_FLAGS "-std=c++11")
+  #SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3")
+ENDIF()
+
+IF ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+  SET(CMAKE_CXX_FLAGS "-std=c++11")
+ENDIF()
+
+
 ## Enable debug symbols by default
 #IF(CMAKE_BUILD_TYPE STREQUAL "")
 #  set(CMAKE_BUILD_TYPE Debug)
