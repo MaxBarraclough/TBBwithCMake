@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
 
 
 // demonstrate the const issue with run_and_wait
-#if 1
+#if 0
 int main(int argc, char *argv[]) {
     puts("Starting main thread...");
 
@@ -153,11 +153,15 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 0 // fun with fake future
+#if 1 // fun with fake future
 
 // #include "tbb/atomic.h"
 
 // futures in TBB
+
+/// NOTE this example is bad, and only ever worked because VS was seemingly failing to enforce 'const' restrictions
+/// I've commented out the mutation of 'result' and added' const', but this doesn't leave it doing any real work...
+
 int main(int argc, char *argv[]) {
     puts("Starting...");
 
@@ -177,7 +181,7 @@ int main(int argc, char *argv[]) {
             //			this->executionIsComplete = false; // needlessly atomic assignment (can't opt-out of atomicity here, can we?)
         }
 
-        void operator()() {
+        void operator()() /* XXX */ const {
             // atomics consistency rules are specified at https://software.intel.com/en-us/node/506092
 
             // this->executionHasBegun = true; //  unsafe. 'release' semantics ==> "at least this late but possibly later"
@@ -190,7 +194,7 @@ int main(int argc, char *argv[]) {
 
             puts("Task is running");
 
-            result = 3;
+            // result = 3; // XXX
 
             // this time the default of "at least this late" semantics is appropriate, so we leave the default semantics
             // this->executionIsComplete = true; // guaranteed to happen only after outInt has been assigned, and to propagate as expected
@@ -198,7 +202,7 @@ int main(int argc, char *argv[]) {
         }
 
 
-        int getResult(task_group& tg) {
+        int getResult(task_group& tg) const {
             //			if ( !this->executionHasBegun ) {
             //				tg.run(*this); // possibly a really bad idea..... futures are meant to be started manually!
             //			}
@@ -213,32 +217,29 @@ int main(int argc, char *argv[]) {
 
 
     int myOutInt = -1;
-    MyFuture f;
+    const MyFuture f;
 
     {
         task_group g;
 
 
-        g.run(f); //	g.wait();
-        g.run_and_wait(f); // this doesn't work! VS2010 compiler complains of type trouble. seems to cast from const& to &
+        g.run(f); g.wait();
+        //g.run_and_wait(f); // this doesn't work! VS2010 compiler complains of type trouble. seems to cast from const& to &
                            // what's going on here? curiously the arg is *not* the same type as that of the "run" member-function !!!
-                           //g.run_and_wait( [&](){f();} ); // yes, this craziness *is* necessary!
+//      g.run_and_wait( [&](){f();} ); // yes, this craziness *is* necessary!
 
-        printf("%d\n", f.getResult(g));
+        printf( "%d\n", f.getResult(g) );
 
         //g.wait(); // Do nothing. Idempotency of waiting.
         //g.wait();
         //g.wait();
     }
 
-
     //g.run( [&]{Sleep(2000);puts("Task 1 is away");} );
     //g.run( [&]{Sleep(2000);puts("Task 2 is away");} );
     //g.run( [&]{Sleep(2000);puts("Task 3 is away");} );
 
     //g.run_and_wait( [&]{Sleep(2000); puts("A message from the main thread");} );
-
-
 
     //////g.wait();
     // getchar();
