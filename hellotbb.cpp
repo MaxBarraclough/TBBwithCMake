@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
             //			this->executionIsComplete = false; // needlessly atomic assignment (can't opt-out of atomicity here, can we?)
         }
 
-        void operator()() /* XXX */ const {
+        void operator()() {
             // atomics consistency rules are specified at https://software.intel.com/en-us/node/506092
 
             // this->executionHasBegun = true; //  unsafe. 'release' semantics ==> "at least this late but possibly later"
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
 
             puts("Task is running");
 
-            // result = 3; // XXX
+            result = 3; // XXX
 
             // this time the default of "at least this late" semantics is appropriate, so we leave the default semantics
             // this->executionIsComplete = true; // guaranteed to happen only after outInt has been assigned, and to propagate as expected
@@ -223,10 +223,10 @@ int main(int argc, char *argv[]) {
         task_group g;
 
 
-        g.run(f); g.wait();
+//      g.run(f); g.wait();
         //g.run_and_wait(f); // this doesn't work! VS2010 compiler complains of type trouble. seems to cast from const& to &
                            // what's going on here? curiously the arg is *not* the same type as that of the "run" member-function !!!
-//      g.run_and_wait( [&](){f();} ); // yes, this craziness *is* necessary!
+        g.run_and_wait( [&]() mutable {f();} ); // yes, this craziness *is* necessary!
 
         printf( "%d\n", f.getResult(g) );
 
