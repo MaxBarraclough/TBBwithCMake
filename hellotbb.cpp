@@ -34,61 +34,6 @@
 
 using namespace tbb;
 
-#if 1 // totally inappropriate and broken use of subclassing of tbb::task, just for giggles
-// see https://www.threadingbuildingblocks.org/docs/help/reference/task_scheduler/task_cls.htm
-#include "tbb/task.h"
-
-class TrivialTask : public tbb::task {
-public:
-
-    TrivialTask() { }
-
-    task* parent() const { // the "parent" member-function is confusingly referred to as "the successor attribute"
-        return NULL;
-    }
-
-    task* execute() override {
-        puts("Hello from my task!");
-        return NULL;
-    }
-
-    ~TrivialTask() {
-        puts("Destroying my task");
-    }
-};
-
-
-// allocate_continuation
-// #include <stdio.h>
-// #include <stdlib.h>
-int main(int argc, char *argv[]) {
-  // use TBB's custom allocator, along the lines shown in
-  // https://www.threadingbuildingblocks.org/docs/help/tbb_userguide/Simple_Example_Fibonacci_Numbers.htm#tutorial_Simple_Example_Fibonacci_Numbers
-
-  // see also https://www.threadingbuildingblocks.org/docs/help/reference/task_scheduler/task_allocation.htm
-
-  // looking at task_allocation.htm this should use:
-  // "cancellation group is the current innermost cancellation group. "
-  ////// which we don't have!? shouldn't this cause an assert failure?
-  task& t = *new(task::allocate_root()) TrivialTask; // following http://fulla.fnal.gov/intel/tbb/html/a00249.html
-
-  auto count1 = t.ref_count();
-
-  t.execute(); // No concurrency! Hence 'totally inappropriate'
- // t.decrement_ref_count(); causes underflow!
- // if ( NULL != t.parent ) {
- // }
-
- // "Because there is no placement delete expression[...]" https://en.wikipedia.org/w/index.php?title=Placement_syntax&oldid=674756226#Custom_allocators
-
- // not using standard 'new' so can't use standard 'delete'
- // delete (task::allocate_root()) &t; // kaboom! VS2010 picks up a double-free problem. Looks like we're missing something important....????
-
-  auto count2 = t.ref_count();
-  t.decrement_ref_count(); // same as   t.set_ref_count(0);
-  return EXIT_SUCCESS;
-}
-#endif
 
 #if 0 // just spin up and run four simple tasks, using lambdas
 const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
@@ -110,7 +55,10 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 0 // fun with the idea of futures
+
+
+
+#if 1 // fun with the idea of futures
 
 // #include "tbb/atomic.h"
 
@@ -121,8 +69,7 @@ int main(int argc, char *argv[]) {
 // forcing us to handle mutation via a pointer to a mutable value
 // and not within the MyFuture class itself.
 
-
-// we use TBB's sleep functionality, to avoid C++14 dependency
+// We use TBB's sleep functionality, to avoid C++14 dependency
 const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
 const tbb::tick_count::interval_t threeSeconds(3.0);
 const tbb::tick_count::interval_t tenSeconds(10.0);
@@ -189,8 +136,6 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 #endif
-
-
 
 
 
