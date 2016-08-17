@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 // and not within the MyFuture class itself.
 
 
-// we use TBB's 'sleep' functionality, to avoid C++14 dependency
+// we use TBB's sleep functionality, to avoid C++14 dependency
 const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
 const tbb::tick_count::interval_t threeSeconds(3.0);
 const tbb::tick_count::interval_t tenSeconds(10.0);
@@ -180,50 +180,48 @@ int main(int argc, char *argv[]) {
     puts("Starting...");
 
     class MyFuture {
-    public:
-        struct MutableState {
-          MutableState(int r) : result(r) { }
-          int result;
-        };
+      struct MutableState {
+        MutableState() : result(0) { }
+        int result;
+      };
 
-    private:
-        task_group   * tgPtr;
-        MutableState * msPtr;
-
-    public:
-        MyFuture(task_group *t, MutableState * m) :
-            tgPtr(t),
-            msPtr(m)
-        { }
+      class Executor {
+        /*not const*/ MutableState * const msPtr;
+      public:
+        Executor(MutableState *m) : msPtr(m) { };
 
         void operator()() const {
-            puts("[from task] Task is running. Now for the pause...");
-//          this_tbb_thread::sleep( threeSeconds );
-            this_tbb_thread::sleep( tenSeconds );
-            puts("[from task] Task pause complete, assigning output...");
-            msPtr->result = 3;
-            return;
+          puts("[from task] Task is running. Now for the pause...");
+//        this_tbb_thread::sleep( threeSeconds );
+          this_tbb_thread::sleep( tenSeconds );
+          puts("[from task] Task pause complete, assigning output...");
+          msPtr->result = 3;
+          return;
         }
+      };
 
-        int getResult() const {
-            tgPtr->wait();
-            return msPtr->result;
-        }
+      task_group   tg;
+      MutableState ms;
+      const Executor e; // must be const in order to call run(1)
 
+    public:
+      MyFuture() : e(&ms) // just invoke default constructor of tg and ms
+      { }
+
+      void begin() {
+        tg.run( this->e );
+      }
+
+      int force() /*const*/ {
+        tg.wait();
+        return ms.result;
+      }
     };
 
-    int modifyMe = 0;
-
-    MyFuture::MutableState ms(0);
-
-    task_group g;
-
-    const MyFuture f(&g, &ms);
-
-//  g.run_and_wait( [&](){f();} );
+    MyFuture f; // not const: we mutate internally
 
     puts("Now to run");
-    g.run(f);
+    f.begin();
     puts("Running. Now to do a couple of prints with a pause between each.");
     this_tbb_thread::sleep( oneSecond );
     puts("And here we are after a second");
@@ -233,21 +231,10 @@ int main(int argc, char *argv[]) {
     puts("And here we are after yet another second");
     this_tbb_thread::sleep( oneSecond );
     puts("And here we are after yet another second");
-
     puts("And now to wait...");
-    g.wait();
 
+    printf( "%d\n", f.force() );
 
-    printf( "%d\n", f.getResult() );
-
-    //g.run( [&]{Sleep(2000);puts("Task 1 is away");} );
-    //g.run( [&]{Sleep(2000);puts("Task 2 is away");} );
-    //g.run( [&]{Sleep(2000);puts("Task 3 is away");} );
-
-    //g.run_and_wait( [&]{Sleep(2000); puts("A message from the main thread");} );
-
-    //////g.wait();
-    // getchar();
     return EXIT_SUCCESS;
 }
 #endif
