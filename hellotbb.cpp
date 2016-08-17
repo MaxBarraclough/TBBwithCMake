@@ -15,14 +15,20 @@
 #include <stdio.h> //// MOVE TO iostreams TODO
 #include <stdlib.h>
 
+//#include <chrono> // for 2s to mean 2 seconds
+//using namespace std::literals::chrono_literals; // as above
+//#include <thread> // for std::this_thread::sleep_for(1);
+
 #include <tbb/mutex.h>
-tbb::mutex my_mutex;
+#include <tbb/tbb_thread.h>
+
+// tbb::mutex my_mutex;
 
 #if _WIN32||_WIN64
-#include <Windows.h> /* Sleep */
+//#include <Windows.h> /* Sleep */
 #else
 //// #error Only tested on Windows! TODO
-#include <unistd.h>  /* usleep */
+// #include <unistd.h>  /* usleep */
 #endif
 
 
@@ -164,6 +170,12 @@ int main(int argc, char *argv[]) {
 // forcing us to handle mutation via a pointer to a mutable value
 // and not within the MyFuture class itself.
 
+
+// we use TBB's 'sleep' functionality, to avoid C++14 dependency
+const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
+const tbb::tick_count::interval_t threeSeconds(3.0);
+const tbb::tick_count::interval_t tenSeconds(10.0);
+
 int main(int argc, char *argv[]) {
     puts("Starting...");
 
@@ -184,7 +196,10 @@ int main(int argc, char *argv[]) {
         { }
 
         void operator()() const {
-            puts("Task is running");
+            puts("[from task] Task is running. Now for the pause...");
+//          this_tbb_thread::sleep( threeSeconds );
+            this_tbb_thread::sleep( tenSeconds );
+            puts("[from task] Task pause complete, assigning output...");
             msPtr->result = 3;
             return;
         }
@@ -204,15 +219,25 @@ int main(int argc, char *argv[]) {
 
     const MyFuture f(&g, &ms);
 
-//      g.run(f); g.wait();
-    //g.run_and_wait(f); // this doesn't work! VS2010 compiler complains of type trouble. seems to cast from const& to &
-                           // what's going on here? curiously the arg is *not* the same type as that of the "run" member-function !!!
-    g.run_and_wait( [&](){f();} ); // yes, this craziness *is* necessary!
+//  g.run_and_wait( [&](){f();} );
+
+    puts("Now to run");
+    g.run(f);
+    puts("Running. Now to do a couple of prints with a pause between each.");
+    this_tbb_thread::sleep( oneSecond );
+    puts("And here we are after a second");
+    this_tbb_thread::sleep( oneSecond );
+    puts("And here we are after another second");
+    this_tbb_thread::sleep( oneSecond );
+    puts("And here we are after yet another second");
+    this_tbb_thread::sleep( oneSecond );
+    puts("And here we are after yet another second");
+
+    puts("And now to wait...");
+    g.wait();
+
 
     printf( "%d\n", f.getResult() );
-
-    //g.wait(); // Do nothing. Idempotency of waiting.
-    //g.wait();
 
     //g.run( [&]{Sleep(2000);puts("Task 1 is away");} );
     //g.run( [&]{Sleep(2000);puts("Task 2 is away");} );
