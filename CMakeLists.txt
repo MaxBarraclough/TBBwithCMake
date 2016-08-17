@@ -66,8 +66,9 @@ FIND_PACKAGE(TBB 4.4 REQUIRED
              # [OPTIONAL_COMPONENTS [tbbmalloc] [tbb_preview]]
 			 ) 
 INCLUDE_DIRECTORIES(${TBB_INCLUDE_DIRS})
-#TARGET_LINK_LIBRARIES(hellotbb  ${TBB_LIBRARIES}) ## remember it's a DLL: we still have to worry about that
-TARGET_LINK_LIBRARIES(hellotbb  ${TBB_tbb_LIBRARY_DEBUG}) ## make sure tbb_debug.dll can be found
+# No good: TARGET_LINK_LIBRARIES(hellotbb  ${TBB_LIBRARIES}) ## remember it's a DLL: we still have to worry about that
+TARGET_LINK_LIBRARIES(hellotbb  ${TBB_tbb_LIBRARY_RELEASE}) ## tbb.dll
+TARGET_LINK_LIBRARIES(hellotbb  ${TBB_tbb_LIBRARY_DEBUG})   ## tbb_debug.dll
 
 ## Detect and add libpq
 #FIND_PACKAGE(PostgreSQL REQUIRED ) # pq) ## no way to just ask for libpq?????
