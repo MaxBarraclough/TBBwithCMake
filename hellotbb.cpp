@@ -181,15 +181,16 @@ int main(int argc, char *argv[]) {
 
     class MyFuture {
     public:
-
         struct MutableState {
           MutableState(int r) : result(r) { }
           int result;
         };
 
-        task_group * tgPtr;
+    private:
+        task_group   * tgPtr;
         MutableState * msPtr;
 
+    public:
         MyFuture(task_group *t, MutableState * m) :
             tgPtr(t),
             msPtr(m)
