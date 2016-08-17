@@ -153,14 +153,11 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1 // fun with fake future
+#if 1 // fun with the idea of futures
 
 // #include "tbb/atomic.h"
 
-// futures in TBB
-
-/// NOTE this example is bad, and only ever worked because VS was seemingly failing to enforce 'const' restrictions
-/// I've commented out the mutation of 'result' and added' const', but this doesn't leave it doing any real work...
+// Faking/implementing futures with TBB tasks
 
 int main(int argc, char *argv[]) {
     puts("Starting...");
@@ -176,48 +173,19 @@ int main(int argc, char *argv[]) {
         task_group * tgPtr;
         MutableState * mutableStatePtr;
 
-        //		atomic<int> executionHasBegun;
-        //		atomic<bool> executionIsComplete;
-
         MyFuture(task_group *t, MutableState * m) :
             tgPtr(t),
             mutableStatePtr(m)
-            //			,executionHasBegun(),
-            //		    ,executionIsComplete() /*Uninitialised at this point. This DOES NOT assign false.*/
-        {
-            //			this->executionHasBegun = false;
-            //			this->executionIsComplete = false; // needlessly atomic assignment (can't opt-out of atomicity here, can we?)
-        }
+        { }
 
         void operator()() const {
-            // atomics consistency rules are specified at https://software.intel.com/en-us/node/506092
-
-            // this->executionHasBegun = true; //  unsafe. 'release' semantics ==> "at least this late but possibly later"
-            // this->executionHasBegun = 1;    //  unsafe. 'release' semantics ==> "at least this late but possibly later"
-
-            // (using atomic<bool> rather than atomic<bool>) this doesn't work! only <release> is permitted!
-            //this->executionHasBegun.store<acquire>(true); // force ues of acquire semantics: "at least this early, but possibly earlier"
-
-            //			this->executionHasBegun.fetch_and_increment<acquire>(); // safe. fully sequentially consistent, huzzah
-
             puts("Task is running");
-
             mutableStatePtr->result = 3;
-
-            // this time the default of "at least this late" semantics is appropriate, so we leave the default semantics
-            // this->executionIsComplete = true; // guaranteed to happen only after outInt has been assigned, and to propagate as expected
             return;
         }
 
-
         int getResult() const {
-            //			if ( !this->executionHasBegun ) {
-            //				tg.run(*this); // possibly a really bad idea..... futures are meant to be started manually!
-            //			}
-
-            //			if ( !this->executionIsComplete ) {
             tgPtr->wait();
-            //			}
             return mutableStatePtr->result;
         }
 
