@@ -159,6 +159,11 @@ int main(int argc, char *argv[]) {
 
 // Faking/implementing futures with TBB tasks
 
+// Note that mutable state is held in its own struct,
+// as TBB's run(1) function accepts its arg by const reference,
+// forcing us to handle mutation via a pointer to a mutable value
+// and not within the MyFuture class itself.
+
 int main(int argc, char *argv[]) {
     puts("Starting...");
 
