@@ -21,6 +21,8 @@ Note that ***you also need to ensure the relevant TBB DLL can be found at runtim
 The easiest way to do this is to simply copy `tbb_debug.dll` from, for example `C:/Users/mb/Downloads/tbb44/tbb44_20160526oss/bin/intel64/vc14`
 into the main project folder (note: *not* the `bin` folder).
 
+You may find it useful to adjust createLinkToTbbDll.bat to work on your system.
+
 
 Linux
 -----
