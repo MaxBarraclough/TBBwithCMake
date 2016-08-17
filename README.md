@@ -23,6 +23,14 @@ into the main project folder (note: *not* the `bin` folder).
 
 You may find it useful to adjust `createLinkToTbbDll.bat` to work on your system.
 
+If you forget to handle the DLLs in this way, you will see an error-message output if you attempt to run your .exe, along the lines of either
+
+> error while loading shared libraries: tbb.dll: cannot open shared object file: No such file or directory
+
+or (yes, oddly)
+
+> error while loading shared libraries: api-ms-win-crt-heap-l1-1-0.dll: cannot open shared object file: No such file or directory
+
 
 Linux
 -----
