@@ -10,26 +10,15 @@
 
 
 #include "tbb/task_group.h"
+#include <tbb/tbb_thread.h> // for sleep functionality
 
 #include <iostream>
 #include <stdio.h> //// MOVE TO iostreams TODO
 #include <stdlib.h>
 
-//#include <chrono> // for 2s to mean 2 seconds
-//using namespace std::literals::chrono_literals; // as above
-//#include <thread> // for std::this_thread::sleep_for(1);
-
-#include <tbb/mutex.h>
-#include <tbb/tbb_thread.h>
-
-// tbb::mutex my_mutex;
-
-#if _WIN32||_WIN64
-//#include <Windows.h> /* Sleep */
-#else
-//// #error Only tested on Windows! TODO
-// #include <unistd.h>  /* usleep */
-#endif
+// #if ( _WIN32 || _WIN64 )
+// #else
+// #endif
 
 
 using namespace tbb;
