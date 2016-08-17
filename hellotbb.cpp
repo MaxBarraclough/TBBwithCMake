@@ -176,22 +176,22 @@ int main(int argc, char *argv[]) {
         };
 
         task_group * tgPtr;
-        MutableState * mutableStatePtr;
+        MutableState * msPtr;
 
         MyFuture(task_group *t, MutableState * m) :
             tgPtr(t),
-            mutableStatePtr(m)
+            msPtr(m)
         { }
 
         void operator()() const {
             puts("Task is running");
-            mutableStatePtr->result = 3;
+            msPtr->result = 3;
             return;
         }
 
         int getResult() const {
             tgPtr->wait();
-            return mutableStatePtr->result;
+            return msPtr->result;
         }
 
     };
