@@ -1,5 +1,3 @@
-// Loosely based on https://repo.anl-external.org/repos/BlueTBB/tbb30_104oss/src/rml/perfor/tbb_simple.cpp
-
 // #include "stdafx.h"
 
 
