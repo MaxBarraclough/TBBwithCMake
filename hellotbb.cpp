@@ -26,7 +26,11 @@
 
 using namespace tbb;
 
-
+// No matter which main function we use,
+// we want to disable buffering on stdout before we do anything
+// TODO this is nasty
+struct Dummy { Dummy() { setbuf(stdout, NULL); } };
+static Dummy d;
 
 
 #if 0 // just spin up and run four simple tasks, using lambdas
