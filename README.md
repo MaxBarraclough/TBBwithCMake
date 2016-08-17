@@ -18,7 +18,7 @@ Windows
 For CMake to find TBB, you'll have to set the CMake variable `TBB_ROOT_DIR` to give the path of the root directory of your TBB build. This may look something like: `C:/Users/mb/Downloads/tbb44/tbb44_20160526oss`
 
 Note that ***you also need to ensure the relevant TBB DLL can be found at runtime***.
-The easiest way to do this is to simply copy `tbb_debug.dll` from, for example `C:/Users/mb/Downloads/tbb44/tbb44_20160526oss/bin/intel64/vc14`
+The easiest way to do this is to simply copy `tbb_debug.dll` and `tbb.dll` from, for example `C:/Users/mb/Downloads/tbb44/tbb44_20160526oss/bin/intel64/vc14`
 into the main project folder (note: *not* the `bin` folder).
 
 You may find it useful to adjust `createLinkToTbbDll.bat` to work on your system.
