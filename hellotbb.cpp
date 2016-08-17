@@ -97,22 +97,20 @@ int main(int argc, char *argv[]) {
 }
 #endif
 
-#if 0
+#if 0 // just spin up and run four simple tasks, using lambdas
+const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
+
 int main(int argc, char *argv[]) {
     puts("Starting...");
 
     task_group g;
 
-    g.run([&] {Sleep(2000); puts("Task 1 is away"); });
-    g.run([&] {Sleep(2000); puts("Task 2 is away"); });
-    g.run([&] {Sleep(2000); puts("Task 3 is away"); });
+    g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 1] started"); } );
+    g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 2] started"); } );
+    g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 3] started"); } );
 
-    g.run_and_wait([&] {Sleep(2000); puts("A message from the main thread"); });
+    g.run_and_wait( [&]{ this_tbb_thread::sleep(oneSecond); puts("A message from the main thread"); } );
 
-
-
-    //////g.wait();
-    // getchar();
     return EXIT_SUCCESS;
 }
 #endif
