@@ -11,17 +11,24 @@
 
 #include "tbb/task_group.h"
 #include <tbb/tbb_thread.h> // for sleep functionality
+// An alternative can be taken from
+// https://repo.anl-external.org/repos/BlueTBB/tbb30_104oss/src/rml/perfor/tbb_simple.cpp
+//void MilliSleep(unsigned milliseconds) {
+//#if ( _WIN32 || _WIN64 )
+//    Sleep(milliseconds); // accepts DWORD: 32-bit unsigned integer
+//#else
+//    usleep(milliseconds * 1000); // accepts mysterious useconds_t
+//#endif
+//}
+
 
 #include <iostream>
 #include <stdio.h> //// MOVE TO iostreams TODO
 #include <stdlib.h>
 
-// #if ( _WIN32 || _WIN64 )
-// #else
-// #endif
-
-
 using namespace tbb;
+
+
 
 
 #if 0 // just spin up and run four simple tasks, using lambdas
