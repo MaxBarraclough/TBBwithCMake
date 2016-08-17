@@ -119,46 +119,6 @@ int main(int argc, char *argv[]) {
 
 
 
-// demonstrate the const issue with run_and_wait
-#if 0
-int main(int argc, char *argv[]) {
-    puts("Starting main thread...");
-
-    class MyCallable {
-    public:
-      MyCallable() {} // clang++ doesn't like 'const' instance of empty class without explicitly defined constructor
-// Normally, using an empty class we avoid having to define our own default constructor
-// (even if MSVC is permissive here) see http://stackoverflow.com/a/8092791/2307853
-//    int dummy;
-
-        void operator()() const {
-            puts("Task is running");
-        }
-    };
-
-    const MyCallable f;
-
-    {
-        task_group g;
-
-        // g.run( f ); g.wait();
-        g.run_and_wait( f );
-
-//      g.run_and_wait( [&]() { f(); } );
-//      g.run_and_wait( [&]() { } );
-        // C++ lambdas seem to survive the const shenanigans, but MyCallable doesn't: build error
-    }
-
-    puts("Press Enter to exit");
-    getchar();
-    return EXIT_SUCCESS;
-}
-#endif
-
-
-
-
-
 #if 1 // fun with the idea of futures
 
 // #include "tbb/atomic.h"
