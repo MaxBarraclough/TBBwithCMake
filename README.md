@@ -25,7 +25,7 @@ into the main project folder (note: *not* the `bin` folder).
 Linux
 -----
 
-CMake may need hints to find your install of Intel TBB. Adjust configureCMakeLinux.sh to work on your system.
+CMake may need hints to find your install of Intel TBB. Adjust `configureCMakeLinux.sh` to work on your system.
 
 Unlike on Windows, there's no need to worry about the system finding the shared object library after the build has completed.
 
