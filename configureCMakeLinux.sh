@@ -19,5 +19,12 @@ r="${rArr[0]}"
 cmake -G"Unix Makefiles"          \
 "-DTBB_ROOT_DIR=${m}"             \
 "-DTBB_tbb_LIBRARY_DEBUG=${d}"    \
-"-DTBB_tbb_LIBRARY_RELEASE=${r}"
+"-DTBB_tbb_LIBRARY_RELEASE=${r}"  \
+-DCMAKE_BUILD_TYPE=Debug
+
+# -DCMAKE_BUILD_TYPE=Release
+# -DCMAKE_BUILD_TYPE=RelWithDebInfo
+# -DCMAKE_BUILD_TYPE=MinSizeRel
+
+## see https://cmake.org/cmake/help/v3.0/variable/CMAKE_BUILD_TYPE.html
 
