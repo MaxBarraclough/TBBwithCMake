@@ -26,17 +26,13 @@
 
 using namespace tbb;
 
-// No matter which main function we use,
-// we want to disable buffering on stdout before we do anything
-// TODO this is nasty
-struct Dummy { Dummy() { setbuf(stdout, NULL); } };
-static Dummy d;
-
 
 #if 0 // just spin up and run four simple tasks, using lambdas
 const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
 
 int main(int argc, char *argv[]) {
+    setbuf(stdout, NULL); // disable buffering on stdout before we do anything
+
     puts("Starting...");
 
     task_group g;
@@ -73,6 +69,8 @@ const tbb::tick_count::interval_t threeSeconds(3.0);
 const tbb::tick_count::interval_t tenSeconds(10.0);
 
 int main(int argc, char *argv[]) {
+    setbuf(stdout, NULL); // disable buffering on stdout before we do anything
+
     puts("Starting...");
 
     class MyFuture {
@@ -144,6 +142,8 @@ int main(int argc, char *argv[]) {
 const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
 
 int main(int argc, char *argv[]) {
+  setbuf(stdout, NULL); // disable buffering on stdout before we do anything
+
   task_group tg;
 
   puts("Here we go");
@@ -185,6 +185,8 @@ struct SelfMutatingFuture {
 
 
 int main(int argc, char *argv[]) {
+  setbuf(stdout, NULL); // disable buffering on stdout before we do anything
+
   task_group tg;
   SelfMutatingFuture s;
 
