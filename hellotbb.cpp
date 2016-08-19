@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1 // fun with the idea of futures
+#if 0 // fun with the idea of futures
 
 // #include "tbb/atomic.h"
 
@@ -134,3 +134,37 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 #endif
+
+
+
+
+
+
+#if 1
+const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
+
+int main(int argc, char *argv[]) {
+  task_group tg;
+
+  puts("Here we go");
+
+  int myInt = 0;
+
+  tg.run( [&](){
+    myInt = 3;
+    puts("[from task] Now to sleep");
+    this_tbb_thread::sleep( oneSecond );
+    puts("[from task] Done sleeping");
+  } );
+
+
+  puts("Now to wait");
+  tg.wait();
+  puts("Done waiting");
+  printf("Value is now %d\n",myInt);
+
+  return EXIT_SUCCESS;
+}
+
+#endif
+
