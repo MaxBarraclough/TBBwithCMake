@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1
+#if 0
 const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
 
 int main(int argc, char *argv[]) {
@@ -166,5 +166,45 @@ int main(int argc, char *argv[]) {
   return EXIT_SUCCESS;
 }
 
+#endif
+
+
+
+
+
+
+#if 1
+struct SelfMutatingFuture {
+  int myInt;
+  SelfMutatingFuture() : myInt(0) { }
+
+  void operator()() {
+    this->myInt = 3;
+  }
+};
+
+
+int main(int argc, char *argv[]) {
+  task_group tg;
+  SelfMutatingFuture s;
+
+  puts("Here we go");
+
+// We could use run_and_wait, but to be more illustrative, we don't
+
+// tg.run(s); // forbidden: operator()() is not const
+
+// lambda itself is const, doesn't matter that 's' (captured by ref) is mutated
+  tg.run( [&](){
+    s();
+  } );
+
+  puts("Now to wait");
+  tg.wait();
+  puts("Done waiting");
+  printf("Value is now %d\n",s.myInt);
+
+  return EXIT_SUCCESS;
+}
 #endif
 
