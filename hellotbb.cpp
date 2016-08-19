@@ -31,19 +31,19 @@ using namespace tbb;
 const tbb::tick_count::interval_t oneSecond(1.0);    // double holds the number of seconds
 
 int main(int argc, char *argv[]) {
-    setbuf(stdout, NULL); // disable buffering on stdout before we do anything
+  setbuf(stdout, NULL); // disable buffering on stdout before we do anything
 
-    puts("Starting...");
+  puts("Starting...");
 
-    task_group g;
+  task_group g;
 
-    g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 1] started"); } );
-    g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 2] started"); } );
-    g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 3] started"); } );
+  g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 1] started"); } );
+  g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 2] started"); } );
+  g.run( [&]{ this_tbb_thread::sleep(oneSecond); puts("[Task 3] started"); } );
 
-    g.run_and_wait( [&]{ this_tbb_thread::sleep(oneSecond); puts("A message from the main thread"); } );
+  g.run_and_wait( [&]{ this_tbb_thread::sleep(oneSecond); puts("A message from the main thread"); } );
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 #endif
 
@@ -69,67 +69,67 @@ const tbb::tick_count::interval_t threeSeconds(3.0);
 const tbb::tick_count::interval_t tenSeconds(10.0);
 
 int main(int argc, char *argv[]) {
-    setbuf(stdout, NULL); // disable buffering on stdout before we do anything
+  setbuf(stdout, NULL); // disable buffering on stdout before we do anything
 
-    puts("Starting...");
+  puts("Starting...");
 
-    class MyFuture {
-      struct MutableState {
-        MutableState() : result(0) { }
-        int result;
-      };
+  class MyFuture {
+    struct MutableState {
+      MutableState() : result(0) { }
+      int result;
+    };
 
-      class Executor {
-        /*not const*/ MutableState * const msPtr;
-      public:
-        Executor(MutableState *m) : msPtr(m) { };
-
-        void operator()() const {
-          puts("[from task] Task is running. Now for the pause...");
-//        this_tbb_thread::sleep( threeSeconds );
-          this_tbb_thread::sleep( tenSeconds );
-          puts("[from task] Task pause complete, assigning output...");
-          msPtr->result = 3;
-          return;
-        }
-      };
-
-      task_group   tg;
-      MutableState ms;
-      const Executor e; // must be const in order to call run(1)
-
+    class Executor {
+      /*not const*/ MutableState * const msPtr;
     public:
-      MyFuture() : e(&ms) // just invoke default constructor of tg and ms
-      { }
+      Executor(MutableState *m) : msPtr(m) { };
 
-      void begin() {
-        tg.run( this->e );
-      }
-
-      int force() /*const*/ {
-        tg.wait();
-        return ms.result;
+      void operator()() const {
+        puts("[from task] Task is running. Now for the pause...");
+//        this_tbb_thread::sleep( threeSeconds );
+        this_tbb_thread::sleep( tenSeconds );
+        puts("[from task] Task pause complete, assigning output...");
+        msPtr->result = 3;
+        return;
       }
     };
 
-    MyFuture f; // not const: we mutate internally
+    task_group   tg;
+    MutableState ms;
+    const Executor e; // must be const in order to call run(1)
 
-    puts("Now to run");
-    f.begin();
-    puts("Running. Now to do a couple of prints with a pause between each.");
-    this_tbb_thread::sleep( oneSecond );
-    puts("And here we are after a second");
-    this_tbb_thread::sleep( oneSecond );
-    puts("And here we are after another second");
-    this_tbb_thread::sleep( oneSecond );
-    puts("And here we are after yet another second");
-    this_tbb_thread::sleep( oneSecond );
-    puts("And here we are after yet another second");
-    puts("And now to wait...");
+  public:
+    MyFuture() : e(&ms) // just invoke default constructor of tg and ms
+    { }
 
-    printf( "%d\n", f.force() );
+    void begin() {
+      tg.run( this->e );
+    }
 
-    return EXIT_SUCCESS;
+    int force() /*const*/ {
+      tg.wait();
+      return ms.result;
+    }
+  };
+
+  MyFuture f; // not const: we mutate internally
+
+  puts("Now to run");
+  f.begin();
+  puts("Running. Now to do a couple of prints with a pause between each.");
+  this_tbb_thread::sleep( oneSecond );
+  puts("And here we are after a second");
+  this_tbb_thread::sleep( oneSecond );
+  puts("And here we are after another second");
+  this_tbb_thread::sleep( oneSecond );
+  puts("And here we are after yet another second");
+  this_tbb_thread::sleep( oneSecond );
+  puts("And here we are after yet another second");
+  puts("And now to wait...");
+
+  printf( "%d\n", f.force() );
+
+  return EXIT_SUCCESS;
 }
 #endif
 
