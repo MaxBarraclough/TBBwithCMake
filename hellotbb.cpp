@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
 
   class MyFuture {
     struct MutableState {
-      MutableState() : result(0) { }
       int result;
+      MutableState() : result(0) { }
     };
 
     class Executor {
